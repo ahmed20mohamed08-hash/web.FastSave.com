@@ -3,37 +3,263 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fast Save - تحميل الفيديوهات والصوت</title>
-    <link rel="icon" type="image/png" href="icon.png">
-    <link rel="shortcut icon" type="image/png" href="icon.png">
-    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <title>Fast Save - تحميل وتحويل الفيديوهات</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        :root {
-            --bg-deep: #090814;
-            --bg-card: #141226;
-            --bg-card-hover: #1a1835;
-            --pink-neon: #FF1F78;
-            --pink-glow: rgba(255, 31, 120, 0.3);
-            --blue-electric: #1F8FFF;
-            --blue-glow: rgba(31, 143, 255, 0.3);
-            --text-primary: #ffffff;
-            --text-secondary: #a0a0b8;
-            --text-muted: #6b6b80;
-            --border-subtle: rgba(255, 255, 255, 0.08);
-            --shadow-card: 0 8px 32px rgba(0, 0, 0, 0.4);
-            --shadow-glow-pink: 0 0 30px var(--pink-glow);
-            --shadow-glow-blue: 0 0 30px var(--blue-glow);
-            --gradient-pink-blue: linear-gradient(135deg, var(--pink-neon), var(--blue-electric));
-            --gradient-card: linear-gradient(145deg, rgba(20, 18, 38, 0.9), rgba(15, 13, 30, 0.95));
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap');
+        body {
+            font-family: 'Cairo', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col justify-between">
+
+    <!-- Header / Navbar -->
+    <header class="border-b border-slate-800 bg-slate-950/50 backdrop-blur-md sticky top-0 z-50">
+        <div class="max-w-5xl mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-3 space-x-reverse">
+                <div class="bg-indigo-600 p-2 rounded-xl text-white">
+                    <i class="fa-solid font-bold fa-bolt text-xl"></i>
+                </div>
+                <span class="text-2xl font-extrabold tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-cyan-400">Fast Save</span>
+            </div>
+            <span class="text-xs bg-slate-800 text-slate-400 px-3 py-1 rounded-full border border-slate-700">v2.0</span>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="max-w-3xl mx-auto px-4 py-12 w-full flex-grow">
+        
+        <!-- Hero Section -->
+        <div class="text-center mb-10">
+            <h1 class="text-3xl md:text-5xl font-extrabold mb-4 leading-tight">
+                حمل وحول مقاطعك المفضلة <br>
+                <span class="text-indigo-400">بسرعة وسهولة</span>
+            </h1>
+            <p class="text-slate-400 text-sm md:text-base">ضع رابط الفيديو بالأسفل لفحصه أو تحويله فوراً</p>
+        </div>
+
+        <!-- Card Container -->
+        <div class="bg-slate-800/80 border border-slate-700 rounded-2xl p-6 shadow-2xl backdrop-blur-xl">
+            
+            <!-- Input Form -->
+            <form id="downloadForm" onsubmit="handleCheck(event)" class="space-y-4">
+                <div class="relative">
+                    <input 
+                        type="url" 
+                        id="videoUrl" 
+                        placeholder="أدخل رابط الفيديو هنا (YouTube, TikTok, Facebook...)" 
+                        required
+                        class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-4 pl-12 text-slate-100 placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition-colors duration-200"
+                    >
+                    <button type="button" onclick="pasteFromClipboard()" class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-indigo-400 p-2 transition-colors" title="لصق من الحافظة">
+                        <i class="fa-regular fa-paste text-lg"></i>
+                    </button>
+                </div>
+
+                <button 
+                    type="submit" 
+                    id="submitBtn"
+                    class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-4 rounded-xl transition-all duration-200 flex items-center justify-center space-x-2 space-x-reverse shadow-lg shadow-indigo-600/30 active:scale-[0.99]"
+                >
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <span>فحص الرابط</span>
+                </button>
+            </form>
+
+            <!-- Loading Spinner -->
+            <div id="loading" class="hidden mt-8 text-center py-6">
+                <div class="inline-block animate-spin rounded-full h-10 w-10 border-4 border-indigo-500 border-t-transparent mb-3"></div>
+                <p class="text-slate-400 text-sm">جاري جلب بيانات الفيديو، انتظر لحظة...</p>
+            </div>
+
+            <!-- Error Message Box -->
+            <div id="errorMessage" class="hidden mt-6 p-4 bg-rose-500/10 border border-rose-500/20 text-rose-400 rounded-xl text-center text-sm">
+                <i class="fa-solid fa-triangle-exclamation ml-2"></i>
+                <span id="errorText">حدث خطأ أثناء الاتصال بالسيرفر!</span>
+            </div>
+
+            <!-- Video Info & Options Section -->
+            <div id="resultContainer" class="hidden mt-8 pt-6 border-t border-slate-700/80 space-y-6">
+                
+                <!-- Video Meta Card -->
+                <div class="flex flex-col sm:flex-row items-center gap-4 bg-slate-900/60 p-4 rounded-xl border border-slate-700/50">
+                    <img id="videoThumb" src="" alt="صورة الفيديو" class="w-full sm:w-36 h-24 object-cover rounded-lg">
+                    <div class="text-center sm:text-right overflow-hidden w-full">
+                        <h3 id="videoTitle" class="font-bold text-slate-100 text-base line-clamp-2 mb-1">---</h3>
+                        <p id="videoDuration" class="text-xs text-slate-400">المدة: --:--</p>
+                    </div>
+                </div>
+
+                <!-- Download Options -->
+                <div class="space-y-3">
+                    <h4 class="text-sm font-semibold text-slate-300">اختر صيغة التحميل:</h4>
+                    
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <!-- MP4 Video Button -->
+                        <button 
+                            onclick="downloadMedia('mp4')" 
+                            class="flex items-center justify-between bg-slate-700/50 hover:bg-indigo-600 border border-slate-600 hover:border-indigo-500 p-3.5 rounded-xl transition-all duration-200 group"
+                        >
+                            <div class="flex items-center space-x-3 space-x-reverse">
+                                <i class="fa-solid fa-file-video text-indigo-400 group-hover:text-white text-xl"></i>
+                                <span class="font-semibold text-sm">تحميل فيديو MP4</span>
+                            </div>
+                            <i class="fa-solid fa-download text-xs opacity-60 group-hover:opacity-100"></i>
+                        </button>
+
+                        <!-- MP3 Audio Button -->
+                        <button 
+                            onclick="downloadMedia('mp3')" 
+                            class="flex items-center justify-between bg-slate-700/50 hover:bg-emerald-600 border border-slate-600 hover:border-emerald-500 p-3.5 rounded-xl transition-all duration-200 group"
+                        >
+                            <div class="flex items-center space-x-3 space-x-reverse">
+                                <i class="fa-solid fa-file-audio text-emerald-400 group-hover:text-white text-xl"></i>
+                                <span class="font-semibold text-sm">تحميل صوت MP3</span>
+                            </div>
+                            <i class="fa-solid fa-download text-xs opacity-60 group-hover:opacity-100"></i>
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-slate-800 text-center py-6 text-slate-500 text-xs">
+        <p>Fast Save &copy; 2026 - جميع الحقوق محفوظة</p>
+    </footer>
+
+    <!-- JavaScript Logic -->
+    <script>
+        // ==========================================
+        // 🚀 رابط سيرفر WispByte المباشر الخاص بك
+        // ==========================================
+        const API_BASE_URL = 'https://Fast-Save-Pro.wispbyte.app';
+
+        let currentVideoData = null;
+
+        // لصق الرابط من الحافظة تلقائياً
+        async function pasteFromClipboard() {
+            try {
+                const text = await navigator.clipboard.readText();
+                document.getElementById('videoUrl').value = text;
+            } catch (err) {
+                alert('لم نتمكن من الوصول للحافظة، يرجى اللصق يدوياً.');
+            }
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        // فحص الفيديو
+        async function handleCheck(event) {
+            event.preventDefault();
+            const urlInput = document.getElementById('videoUrl').value.trim();
+            
+            if (!urlInput) return;
+
+            hideElements();
+            showLoading(true);
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/check`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ url: urlInput })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok || !data.success) {
+                    throw new Error(data.message || 'تعذر استخراج بيانات الفيديو');
+                }
+
+                currentVideoData = data;
+                displayResult(data);
+
+            } catch (error) {
+                showError(error.message || 'تعذر الاتصال بالسيرفر، تأكد من تشغيل الباك إند.');
+            } finally {
+                showLoading(false);
+            }
         }
 
+        // إظهار نتيجة الفحص
+        function displayResult(data) {
+            document.getElementById('videoTitle').innerText = data.title || 'فيديو بدون عنوان';
+            document.getElementById('videoThumb').src = data.thumbnail || 'https://via.placeholder.com/300x160?text=No+Image';
+            document.getElementById('videoDuration').innerText = `المدة: ${data.duration || 'غير معروفة'}`;
+            
+            document.getElementById('resultContainer').classList.remove('hidden');
+        }
+
+        // طلب التحميل
+        async function downloadMedia(format) {
+            const urlInput = document.getElementById('videoUrl').value.trim();
+            if (!urlInput) return;
+
+            try {
+                showLoading(true);
+                
+                const response = await fetch(`${API_BASE_URL}/api/download`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ url: urlInput, format: format })
+                });
+
+                if (!response.ok) {
+                    throw new Error('فشل بدء عملية التحميل من السيرفر');
+                }
+
+                // استقبال الملف وتنزيله تلقائياً في المتصفح
+                const blob = await response.blob();
+                const downloadUrl = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = downloadUrl;
+                a.download = `FastSave_${Date.now()}.${format}`;
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+                window.URL.revokeObjectURL(downloadUrl);
+
+            } catch (error) {
+                showError(error.message || 'حدث خطأ أثناء التحميل');
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        // Helper Functions
+        function showLoading(state) {
+            const loading = document.getElementById('loading');
+            const submitBtn = document.getElementById('submitBtn');
+            if (state) {
+                loading.classList.remove('hidden');
+                submitBtn.disabled = true;
+                submitBtn.classList.add('opacity-50', 'cursor-not-allowed');
+            } else {
+                loading.classList.add('hidden');
+                submitBtn.disabled = false;
+                submitBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+            }
+        }
+
+        function showError(msg) {
+            const errorBox = document.getElementById('errorMessage');
+            document.getElementById('errorText').innerText = msg;
+            errorBox.classList.remove('hidden');
+        }
+
+        function hideElements() {
+            document.getElementById('errorMessage').classList.add('hidden');
+            document.getElementById('resultContainer').classList.add('hidden');
+        }
+    </script>
+</body>
+</html>
         body {
             font-family: 'Tajawal', sans-serif;
             background: var(--bg-deep);
