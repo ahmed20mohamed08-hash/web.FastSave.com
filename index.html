@@ -3,273 +3,252 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fast Save - تحميل وتعديل الفيديوهات</title>
-    <!-- استدعاء خطوط وأيقونات -->
+    <title>Fast Save - تحميل وتحويل الفيديوهات</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --bg-color: #0f172a;
-            --card-bg: #1e293b;
-            --primary: #3b82f6;
-            --primary-hover: #2563eb;
-            --text-color: #f8fafc;
-            --text-muted: #94a3b8;
-            --border-color: #334155;
-            --success: #22c55e;
-            --error: #ef4444;
+            --bg-color: #0b1329;
+            --card-bg: #131c38;
+            --primary-blue: #0075ff;
+            --primary-pink: #e91e63;
+            --text-main: #ffffff;
+            --text-sub: #8a99ad;
+            --border: #1e2d54;
         }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
+        body { background-color: var(--bg-color); color: var(--text-main); min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 15px; }
+        
+        .main-card { width: 100%; max-width: 650px; background: var(--card-bg); border-radius: 16px; border: 1px solid var(--border); box-shadow: 0 8px 32px rgba(0,0,0,0.4); overflow: hidden; }
+        
+        /* Header & Logo */
+        .brand { text-align: center; padding: 25px 20px 15px; }
+        .brand-logo { font-size: 28px; font-weight: bold; background: linear-gradient(45deg, #00d2ff, #3a7bd5); -webkit-background-clip: text; -webkit-text-fill-color: transparent; display: inline-flex; align-items: center; gap: 8px; }
+        .brand p { color: var(--text-sub); font-size: 13px; margin-top: 5px; }
 
-        body {
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
+        /* Navigation Tabs */
+        .nav-tabs { display: flex; border-bottom: 1px solid var(--border); background: rgba(0,0,0,0.2); }
+        .tab-btn { flex: 1; padding: 14px; background: none; border: none; color: var(--text-sub); font-size: 14px; font-weight: 600; cursor: pointer; transition: 0.3s; display: flex; align-items: center; justify-content: center; gap: 6px; }
+        .tab-btn.active { color: #fff; border-bottom: 2px solid var(--primary-pink); background: rgba(233, 30, 99, 0.1); }
 
-        .container {
-            width: 100%;
-            max-width: 600px;
-            background-color: var(--card-bg);
-            border-radius: 16px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-            padding: 30px;
-            border: 1px solid var(--border-color);
-        }
+        /* Tab Content Sections */
+        .tab-content { padding: 25px; display: none; }
+        .tab-content.active { display: block; }
 
-        .header {
-            text-align: center;
-            margin-bottom: 25px;
-        }
+        .input-group { margin-bottom: 20px; }
+        .input-group label { display: block; font-size: 13px; color: var(--text-sub); margin-bottom: 8px; }
+        input[type="text"], select, input[type="file"] { width: 100%; padding: 12px 15px; background: #070d1e; border: 1px solid var(--border); border-radius: 8px; color: #fff; font-size: 14px; outline: none; }
+        
+        .action-btn { width: 100%; padding: 12px; border: none; border-radius: 8px; font-size: 15px; font-weight: bold; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 15px; }
+        .btn-blue { background: #0075ff; color: white; }
+        .btn-pink { background: linear-gradient(90deg, #e91e63, #f44336); color: white; }
+        .action-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
-        .header h1 {
-            font-size: 24px;
-            color: var(--primary);
-            margin-bottom: 5px;
-        }
-
-        .header p {
-            color: var(--text-muted);
-            font-size: 14px;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-size: 14px;
-            color: var(--text-muted);
-        }
-
-        input[type="text"], select {
-            width: 100%;
-            padding: 12px 15px;
-            background-color: #0f172a;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            color: var(--text-color);
-            font-size: 16px;
-            outline: none;
-            transition: border-color 0.3s;
-        }
-
-        input[type="text"]:focus, select:focus {
-            border-color: var(--primary);
-        }
-
-        .btn {
-            width: 100%;
-            padding: 12px;
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: background-color 0.3s, transform 0.1s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-
-        .btn-primary {
-            background-color: var(--primary);
-            color: white;
-            margin-bottom: 12px;
-        }
-
-        .btn-primary:hover {
-            background-color: var(--primary-hover);
-        }
-
-        .btn-success {
-            background-color: var(--success);
-            color: white;
-        }
-
-        .btn-success:hover {
-            background-color: #16a34a;
-        }
-
-        .btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-        }
-
-        .status-message {
-            margin-top: 15px;
-            padding: 12px;
-            border-radius: 8px;
-            font-size: 14px;
-            text-align: center;
-            display: none;
-        }
-
-        .footer {
-            text-align: center;
-            margin-top: 25px;
-            font-size: 12px;
-            color: var(--text-muted);
-        }
+        .status-box { margin-top: 15px; padding: 12px; border-radius: 8px; font-size: 13px; text-align: center; display: none; background: #070d1e; border: 1px solid var(--border); }
+        
+        .footer { text-align: center; padding: 15px; font-size: 12px; color: var(--text-sub); border-top: 1px solid var(--border); }
+        .dev-info { text-align: center; line-height: 1.8; color: var(--text-sub); }
+        .dev-info h3 { color: #fff; margin-bottom: 10px; }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <div class="header">
-            <h1><i class="fas fa-download"></i> Fast Save Pro</h1>
-            <p>تحميل فيديوهات الإنترنت بسهولة فائقة</p>
+    <div class="main-card">
+        <!-- الهيدر واللوجو -->
+        <div class="brand">
+            <div class="brand-logo"><i class="fas fa-download"></i> Fast Save Pro</div>
+            <p>تحميل وتحويل الفيديوهات بسهولة فائقة</p>
         </div>
 
-        <!-- إدخال الرابط -->
-        <div class="form-group">
-            <label for="urlInput">رابط الفيديو (يوتيوب، تيك توك، إلخ):</label>
-            <input type="text" id="urlInput" placeholder="https://www.example.com/video...">
+        <!-- أزرار التنقل بين الأقسام -->
+        <div class="nav-tabs">
+            <button class="tab-btn active" onclick="switchTab('main')"><i class="fas fa-home"></i> الرئيسية</button>
+            <button class="tab-btn" onclick="switchTab('convert')"><i class="fas fa-music"></i> تحويل محلي</button>
+            <button class="tab-btn" onclick="switchTab('dev')"><i class="fas fa-code"></i> المطور</button>
         </div>
 
-        <!-- زر الفحص -->
-        <button type="button" class="btn btn-primary" id="checkBtn" onclick="checkLink()">
-            <i class="fas fa-search"></i> فحص الرابط
-        </button>
+        <!-- 1. قسم الرئيسية (التحميل من الإنترنت) -->
+        <div id="tab-main" class="tab-content active">
+            <div class="input-group">
+                <label>رابط الفيديو (يوتيوب، تيك توك، فيسبوك، أو أي منصة أخرى):</label>
+                <input type="text" id="urlInput" placeholder="https://www.example.com/video...">
+            </div>
 
-        <!-- اختيار الجودة -->
-        <div class="form-group" style="margin-top: 20px;">
-            <label for="formatSelect">اختر الجودة:</label>
-            <select id="formatSelect" disabled>
-                <option value="best">قم بفحص الرابط أولاً...</option>
-            </select>
+            <button class="action-btn btn-blue" id="checkBtn" onclick="checkLink()">
+                <i class="fas fa-search"></i> فحص الرابط
+            </button>
+
+            <div class="input-group" style="margin-top: 15px;">
+                <label>اختر الجودة أو الصيغة (يتم عرضها بعد الفحص):</label>
+                <select id="formatSelect" disabled>
+                    <option>قم بفحص الرابط أولاً...</option>
+                </select>
+            </div>
+
+            <button class="action-btn btn-pink" id="downloadBtn" onclick="startDownload()" disabled>
+                <i class="fas fa-download"></i> بدء التحميل الآن
+            </button>
+
+            <div id="statusMain" class="status-box"></div>
         </div>
 
-        <!-- زر التحميل -->
-        <button type="button" class="btn btn-success" id="downloadBtn" onclick="startDownload()" disabled>
-            <i class="fas fa-cloud-download-alt"></i> بدء التحميل الآن
-        </button>
+        <!-- 2. قسم التحويل المحلي -->
+        <div id="tab-convert" class="tab-content">
+            <div class="input-group">
+                <label>اختر فيديو من جهازك لتحويله إلى MP3:</label>
+                <input type="file" id="localVideo" accept="video/*">
+            </div>
+            <button class="action-btn btn-pink" onclick="convertLocalFile()">
+                <i class="fas fa-sync"></i> تحويل إلى MP3 الآن
+            </button>
+            <div id="statusConvert" class="status-box"></div>
+        </div>
 
-        <!-- شاشة الحالة -->
-        <div id="downloadStatus" class="status-message"></div>
+        <!-- 3. قسم المطور -->
+        <div id="tab-dev" class="tab-content">
+            <div class="dev-info">
+                <h3><i class="fas fa-user-shield"></i> Fast Save System</h3>
+                <p>تم تطوير المنصة بأحدث التقنيات لضمان السرعة والأمان.</p>
+                <p>نسخة السيرفر: 1.0.0 (Wispbyte Active)</p>
+            </div>
+        </div>
 
+        <!-- الفوتر -->
         <div class="footer">
             Fast Save &copy; 2026 - جميع الحقوق محفوظة
         </div>
     </div>
 
-    <!-- سكود الاتصال بالسيرفر -->
     <script>
-        // رابط سيرفر Wispbyte الخاص بك (تأكد أنه يبدأ بـ https)
         const API_BASE_URL = 'https://Fast-Save-Pro.wispbyte.app';
 
+        // التنقل بين الأقسام
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+
+            if (tabName === 'main') {
+                document.querySelectorAll('.tab-btn')[0].classList.add('active');
+                document.getElementById('tab-main').classList.add('active');
+            } else if (tabName === 'convert') {
+                document.querySelectorAll('.tab-btn')[1].classList.add('active');
+                document.getElementById('tab-convert').classList.add('active');
+            } else if (tabName === 'dev') {
+                document.querySelectorAll('.tab-btn')[2].classList.add('active');
+                document.getElementById('tab-dev').classList.add('active');
+            }
+        }
+
+        // فحص الرابط
         async function checkLink() {
             const urlInput = document.getElementById('urlInput');
             const checkBtn = document.getElementById('checkBtn');
-            const statusDiv = document.getElementById('downloadStatus');
+            const statusBox = document.getElementById('statusMain');
             const formatSelect = document.getElementById('formatSelect');
             const downloadBtn = document.getElementById('downloadBtn');
 
             const url = urlInput ? urlInput.value.trim() : '';
-
             if (!url) {
-                alert('الرجاء إدخال الرابط أولاً!');
+                alert('الرجاء إدخال رابط الفيديو!');
                 return;
             }
 
             checkBtn.disabled = true;
             checkBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري الفحص...';
-            
-            statusDiv.style.display = 'block';
-            statusDiv.style.backgroundColor = '#1e293b';
-            statusDiv.style.color = '#38bdf8';
-            statusDiv.textContent = 'جاري الاتصال بالسيرفر لفحص الرابط...';
+            statusBox.style.display = 'block';
+            statusBox.style.color = '#00d2ff';
+            statusBox.textContent = 'جاري الاتصال بالسيرفر وفحص الرابط...';
 
             try {
                 const response = await fetch(`${API_BASE_URL}/api/check`, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json'
-                    },
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ url: url })
                 });
 
                 const data = await response.json();
+                if (!response.ok || data.error) throw new Error(data.error || 'تعذر فحص الرابط');
 
-                if (!response.ok || data.error) {
-                    throw new Error(data.error || 'تعذر فحص الرابط');
-                }
-
-                // تعبئة الخيارات
                 formatSelect.innerHTML = '';
-                if (data.formats && data.formats.length > 0) {
-                    data.formats.forEach(f => {
-                        const opt = document.createElement('option');
-                        opt.value = f.id;
-                        opt.textContent = f.label;
-                        formatSelect.appendChild(opt);
-                    });
-                }
+                data.formats.forEach(f => {
+                    const opt = document.createElement('option');
+                    opt.value = f.id;
+                    opt.textContent = f.label;
+                    formatSelect.appendChild(opt);
+                });
 
                 formatSelect.disabled = false;
                 downloadBtn.disabled = false;
-
-                statusDiv.style.backgroundColor = 'rgba(34, 197, 94, 0.1)';
-                statusDiv.style.color = 'var(--success)';
-                statusDiv.textContent = `✅ تم بنجاح: ${data.title}`;
+                statusBox.style.color = '#4caf50';
+                statusBox.textContent = `✅ تم التعرف على الفيديو: ${data.title}`;
 
             } catch (err) {
-                console.error(err);
-                statusDiv.style.backgroundColor = 'rgba(239, 68, 68, 0.1)';
-                statusDiv.style.color = 'var(--error)';
-                statusDiv.textContent = err.message || 'فشل الاتصال بالسيرفر، تأكد من تشغيله.';
+                statusBox.style.color = '#f44336';
+                statusBox.textContent = err.message || 'فشل الاتصال بالسيرفر';
             } finally {
                 checkBtn.disabled = false;
                 checkBtn.innerHTML = '<i class="fas fa-search"></i> فحص الرابط';
             }
         }
 
+        // بدء التنزيل الفوري لجهاز المستخدم
         function startDownload() {
             const urlInput = document.getElementById('urlInput');
             const formatSelect = document.getElementById('formatSelect');
-            
+
             const url = urlInput ? urlInput.value.trim() : '';
             const format = formatSelect ? formatSelect.value : 'best';
 
             if (!url) return;
 
-            // توجيه المتصفح لتنزيل الملف مباشرة من سيرفر Wispbyte
+            // توجيه إجبار التنزيل عبر المتصفح
             const downloadUrl = `${API_BASE_URL}/api/download?url=${encodeURIComponent(url)}&format=${encodeURIComponent(format)}`;
+            
+            // فتح عملية التنزيل المباشرة
             window.location.href = downloadUrl;
+        }
+
+        // تحويل فيديو محلي
+        async function convertLocalFile() {
+            const fileInput = document.getElementById('localVideo');
+            const statusBox = document.getElementById('statusConvert');
+
+            if (!fileInput.files || fileInput.files.length === 0) {
+                alert('اختر ملف فيديو أولاً');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('video', fileInput.files[0]);
+
+            statusBox.style.display = 'block';
+            statusBox.style.color = '#00d2ff';
+            statusBox.textContent = 'جاري تحويل الملف إلى MP3...';
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/convert`, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!response.ok) throw new Error('فشل التحويل');
+
+                const blob = await response.blob();
+                const downloadUrl = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = downloadUrl;
+                a.download = 'converted_audio.mp3';
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+
+                statusBox.style.color = '#4caf50';
+                statusBox.textContent = '✅ تم التحويل بنجاح وبدأ التحميل على جهازك!';
+
+            } catch (err) {
+                statusBox.style.color = '#f44336';
+                statusBox.textContent = err.message || 'حدث خطأ أثناء تحويل الملف';
+            }
         }
     </script>
 </body>
