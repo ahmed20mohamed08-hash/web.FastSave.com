@@ -3,52 +3,262 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fast Save - تحميل وتحويل الفيديوهات</title>
+    <title>Fast Save Pro - تحميل وتحويل الفيديوهات</title>
+    <!-- استدعاء الأيقونات والخطوط -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+    
     <style>
         :root {
-            --bg-color: #0b1329;
-            --card-bg: #131c38;
-            --primary-blue: #0075ff;
-            --primary-pink: #e91e63;
-            --text-main: #ffffff;
-            --text-sub: #8a99ad;
-            --border: #1e2d54;
+            --bg-color: #080d1a;
+            --card-bg: rgba(15, 23, 42, 0.75);
+            --neon-blue: #00f0ff;
+            --neon-pink: #ff007f;
+            --neon-purple: #a855f7;
+            --text-main: #f8fafc;
+            --text-sub: #94a3b8;
+            --border-glow: rgba(0, 240, 255, 0.2);
+            --input-bg: rgba(6, 11, 25, 0.8);
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
-        body { background-color: var(--bg-color); color: var(--text-main); min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 15px; }
-        
-        .main-card { width: 100%; max-width: 650px; background: var(--card-bg); border-radius: 16px; border: 1px solid var(--border); box-shadow: 0 8px 32px rgba(0,0,0,0.4); overflow: hidden; }
-        
-        /* Header & Logo */
-        .brand { text-align: center; padding: 25px 20px 15px; }
-        .brand-logo { font-size: 28px; font-weight: bold; background: linear-gradient(45deg, #00d2ff, #3a7bd5); -webkit-background-clip: text; -webkit-text-fill-color: transparent; display: inline-flex; align-items: center; gap: 8px; }
-        .brand p { color: var(--text-sub); font-size: 13px; margin-top: 5px; }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Cairo', sans-serif;
+        }
 
-        /* Navigation Tabs */
-        .nav-tabs { display: flex; border-bottom: 1px solid var(--border); background: rgba(0,0,0,0.2); }
-        .tab-btn { flex: 1; padding: 14px; background: none; border: none; color: var(--text-sub); font-size: 14px; font-weight: 600; cursor: pointer; transition: 0.3s; display: flex; align-items: center; justify-content: center; gap: 6px; }
-        .tab-btn.active { color: #fff; border-bottom: 2px solid var(--primary-pink); background: rgba(233, 30, 99, 0.1); }
+        body {
+            background-color: var(--bg-color);
+            background-image: 
+                radial-gradient(circle at 15% 20%, rgba(255, 0, 127, 0.15) 0%, transparent 45%),
+                radial-gradient(circle at 85% 80%, rgba(0, 240, 255, 0.15) 0%, transparent 45%);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
 
-        /* Tab Content Sections */
-        .tab-content { padding: 25px; display: none; }
-        .tab-content.active { display: block; }
+        /* الكارت الرئيسي بتصميم زجاجي */
+        .main-card {
+            width: 100%;
+            max-width: 650px;
+            background: var(--card-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-radius: 24px;
+            border: 1px solid var(--border-glow);
+            box-shadow: 
+                0 0 30px rgba(0, 0, 0, 0.8),
+                0 0 15px rgba(0, 240, 255, 0.1);
+            overflow: hidden;
+            position: relative;
+        }
 
-        .input-group { margin-bottom: 20px; }
-        .input-group label { display: block; font-size: 13px; color: var(--text-sub); margin-bottom: 8px; }
-        input[type="text"], select, input[type="file"] { width: 100%; padding: 12px 15px; background: #070d1e; border: 1px solid var(--border); border-radius: 8px; color: #fff; font-size: 14px; outline: none; }
-        
-        .action-btn { width: 100%; padding: 12px; border: none; border-radius: 8px; font-size: 15px; font-weight: bold; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 15px; }
-        .btn-blue { background: #0075ff; color: white; }
-        .btn-pink { background: linear-gradient(90deg, #e91e63, #f44336); color: white; }
-        .action-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .main-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--neon-pink), var(--neon-purple), var(--neon-blue));
+        }
 
-        .status-box { margin-top: 15px; padding: 12px; border-radius: 8px; font-size: 13px; text-align: center; display: none; background: #070d1e; border: 1px solid var(--border); }
-        
-        .footer { text-align: center; padding: 15px; font-size: 12px; color: var(--text-sub); border-top: 1px solid var(--border); }
-        .dev-info { text-align: center; line-height: 1.8; color: var(--text-sub); }
-        .dev-info h3 { color: #fff; margin-bottom: 10px; }
+        /* الهيدر واللوجو */
+        .brand {
+            text-align: center;
+            padding: 35px 20px 20px;
+        }
+
+        .brand-logo {
+            font-size: 32px;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--neon-blue), var(--neon-pink));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            filter: drop-shadow(0 0 10px rgba(0, 240, 255, 0.3));
+        }
+
+        .brand p {
+            color: var(--text-sub);
+            font-size: 14px;
+            margin-top: 6px;
+            font-weight: 400;
+        }
+
+        /* أزرار التنقل (Tabs) */
+        .nav-tabs {
+            display: flex;
+            background: rgba(0, 0, 0, 0.4);
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 6px;
+            gap: 6px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 12px;
+            background: transparent;
+            border: none;
+            border-radius: 12px;
+            color: var(--text-sub);
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .tab-btn:hover {
+            color: #fff;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .tab-btn.active {
+            color: #fff;
+            background: linear-gradient(135deg, rgba(255, 0, 127, 0.2), rgba(0, 240, 255, 0.2));
+            border: 1px solid rgba(0, 240, 255, 0.4);
+            box-shadow: 0 0 15px rgba(0, 240, 255, 0.2);
+        }
+
+        /* محتوى التبويبات */
+        .tab-content {
+            padding: 30px;
+            display: none;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .input-group {
+            margin-bottom: 22px;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 14px;
+            color: var(--text-sub);
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        input[type="text"], select, input[type="file"] {
+            width: 100%;
+            padding: 14px 18px;
+            background: var(--input-bg);
+            border: 1px solid rgba(0, 240, 255, 0.2);
+            border-radius: 14px;
+            color: #fff;
+            font-size: 15px;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        input[type="text"]:focus, select:focus {
+            border-color: var(--neon-blue);
+            box-shadow: 0 0 15px rgba(0, 240, 255, 0.3);
+        }
+
+        /* الأزرار النيون المتوهجة */
+        .action-btn {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 14px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 15px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-neon-blue {
+            background: linear-gradient(135deg, #0072ff, var(--neon-blue));
+            color: #000;
+            box-shadow: 0 0 20px rgba(0, 240, 255, 0.4);
+        }
+
+        .btn-neon-blue:hover {
+            box-shadow: 0 0 30px rgba(0, 240, 255, 0.7);
+            transform: translateY(-2px);
+        }
+
+        .btn-neon-pink {
+            background: linear-gradient(135deg, var(--neon-pink), #ff5252);
+            color: #fff;
+            box-shadow: 0 0 20px rgba(255, 0, 127, 0.4);
+        }
+
+        .btn-neon-pink:hover {
+            box-shadow: 0 0 30px rgba(255, 0, 127, 0.7);
+            transform: translateY(-2px);
+        }
+
+        .action-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            box-shadow: none !important;
+            transform: none !important;
+        }
+
+        /* صندوق الرسائل والحالة */
+        .status-box {
+            margin-top: 15px;
+            padding: 14px;
+            border-radius: 12px;
+            font-size: 14px;
+            text-align: center;
+            display: none;
+            background: rgba(6, 11, 25, 0.9);
+            border: 1px solid var(--border-glow);
+            font-weight: 600;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 20px;
+            font-size: 13px;
+            color: var(--text-sub);
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .dev-info {
+            text-align: center;
+            line-height: 2;
+            color: var(--text-sub);
+        }
+
+        .dev-info h3 {
+            color: var(--neon-blue);
+            margin-bottom: 12px;
+            font-size: 20px;
+            filter: drop-shadow(0 0 8px rgba(0, 240, 255, 0.4));
+        }
     </style>
 </head>
 <body>
@@ -56,8 +266,8 @@
     <div class="main-card">
         <!-- الهيدر واللوجو -->
         <div class="brand">
-            <div class="brand-logo"><i class="fas fa-download"></i> Fast Save Pro</div>
-            <p>تحميل وتحويل الفيديوهات بسهولة فائقة</p>
+            <div class="brand-logo"><i class="fas fa-bolt"></i> Fast Save Pro</div>
+            <p>تحميل وتحويل الفيديوهات بسرعة فائقة وبدون إعلانات</p>
         </div>
 
         <!-- أزرار التنقل بين الأقسام -->
@@ -70,22 +280,22 @@
         <!-- 1. قسم الرئيسية (التحميل من الإنترنت) -->
         <div id="tab-main" class="tab-content active">
             <div class="input-group">
-                <label>رابط الفيديو (يوتيوب، تيك توك، فيسبوك، أو أي منصة أخرى):</label>
+                <label>رابط الفيديو (يوتيوب، تيك توك، فيسبوك، أو أي منصة):</label>
                 <input type="text" id="urlInput" placeholder="https://www.example.com/video...">
             </div>
 
-            <button class="action-btn btn-blue" id="checkBtn" onclick="checkLink()">
+            <button class="action-btn btn-neon-blue" id="checkBtn" onclick="checkLink()">
                 <i class="fas fa-search"></i> فحص الرابط
             </button>
 
-            <div class="input-group" style="margin-top: 15px;">
-                <label>اختر الجودة أو الصيغة (يتم عرضها بعد الفحص):</label>
+            <div class="input-group" style="margin-top: 20px;">
+                <label>اختر الجودة أو الصيغة (بعد الفحص):</label>
                 <select id="formatSelect" disabled>
                     <option>قم بفحص الرابط أولاً...</option>
                 </select>
             </div>
 
-            <button class="action-btn btn-pink" id="downloadBtn" onclick="startDownload()" disabled>
+            <button class="action-btn btn-neon-pink" id="downloadBtn" onclick="startDownload()" disabled>
                 <i class="fas fa-download"></i> بدء التحميل الآن
             </button>
 
@@ -98,7 +308,7 @@
                 <label>اختر فيديو من جهازك لتحويله إلى MP3:</label>
                 <input type="file" id="localVideo" accept="video/*">
             </div>
-            <button class="action-btn btn-pink" onclick="convertLocalFile()">
+            <button class="action-btn btn-neon-pink" onclick="convertLocalFile()">
                 <i class="fas fa-sync"></i> تحويل إلى MP3 الآن
             </button>
             <div id="statusConvert" class="status-box"></div>
@@ -107,9 +317,9 @@
         <!-- 3. قسم المطور -->
         <div id="tab-dev" class="tab-content">
             <div class="dev-info">
-                <h3><i class="fas fa-user-shield"></i> Fast Save System</h3>
-                <p>تم تطوير المنصة بأحدث التقنيات لضمان السرعة والأمان.</p>
-                <p>نسخة السيرفر: 1.0.0 (Wispbyte Active)</p>
+                <h3><i class="fas fa-shield-halved"></i> Fast Save System</h3>
+                <p>منصة سريعة ومصممة بأحدث التقنيات لخدمتك.</p>
+                <p>السيرفر النشط: <span style="color: var(--neon-pink);">Wispbyte Dedicated</span></p>
             </div>
         </div>
 
@@ -119,6 +329,7 @@
         </div>
     </div>
 
+    <!-- السكربت البرمجي المربوط بسيرفر Wispbyte -->
     <script>
         const API_BASE_URL = 'https://Fast-Save-Pro.wispbyte.app';
 
@@ -149,14 +360,14 @@
 
             const url = urlInput ? urlInput.value.trim() : '';
             if (!url) {
-                alert('الرجاء إدخال رابط الفيديو!');
+                alert('الرجاء إدخال رابط الفيديو أولاً!');
                 return;
             }
 
             checkBtn.disabled = true;
             checkBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري الفحص...';
             statusBox.style.display = 'block';
-            statusBox.style.color = '#00d2ff';
+            statusBox.style.color = 'var(--neon-blue)';
             statusBox.textContent = 'جاري الاتصال بالسيرفر وفحص الرابط...';
 
             try {
@@ -179,11 +390,11 @@
 
                 formatSelect.disabled = false;
                 downloadBtn.disabled = false;
-                statusBox.style.color = '#4caf50';
+                statusBox.style.color = '#22c55e';
                 statusBox.textContent = `✅ تم التعرف على الفيديو: ${data.title}`;
 
             } catch (err) {
-                statusBox.style.color = '#f44336';
+                statusBox.style.color = '#ef4444';
                 statusBox.textContent = err.message || 'فشل الاتصال بالسيرفر';
             } finally {
                 checkBtn.disabled = false;
@@ -201,10 +412,7 @@
 
             if (!url) return;
 
-            // توجيه إجبار التنزيل عبر المتصفح
             const downloadUrl = `${API_BASE_URL}/api/download?url=${encodeURIComponent(url)}&format=${encodeURIComponent(format)}`;
-            
-            // فتح عملية التنزيل المباشرة
             window.location.href = downloadUrl;
         }
 
@@ -222,7 +430,7 @@
             formData.append('video', fileInput.files[0]);
 
             statusBox.style.display = 'block';
-            statusBox.style.color = '#00d2ff';
+            statusBox.style.color = 'var(--neon-blue)';
             statusBox.textContent = 'جاري تحويل الملف إلى MP3...';
 
             try {
@@ -242,11 +450,11 @@
                 a.click();
                 a.remove();
 
-                statusBox.style.color = '#4caf50';
+                statusBox.style.color = '#22c55e';
                 statusBox.textContent = '✅ تم التحويل بنجاح وبدأ التحميل على جهازك!';
 
             } catch (err) {
-                statusBox.style.color = '#f44336';
+                statusBox.style.color = '#ef4444';
                 statusBox.textContent = err.message || 'حدث خطأ أثناء تحويل الملف';
             }
         }
