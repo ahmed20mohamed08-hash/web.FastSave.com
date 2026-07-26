@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="google-site-verification" content="MylgNYxDwXEJwP5jCUwEajBStq6me9Ym2tGTrP4hOaU" />
     <title>Fast Save - تحميل الفيديوهات والصوت</title>
     <link rel="icon" type="image/png" href="icon.png">
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&display=swap" rel="stylesheet">
@@ -488,7 +489,7 @@
         // عرض أول ذكر فور فتح الصفحة
         document.getElementById('athkarText').textContent = athkarList[currentAthkarIndex];
 
-        // التغيير التلقائي كل 9 ثوانٍ لإعطاء وقت كافٍ لقراءة الأدعية الطويلة
+        // التغيير التلقائي كل 15 ثانية لإعطاء وقت كافٍ لقراءة الأدعية الطويلة
         setInterval(changeAthkar, 15000);
 
         // رابط دومين الباك إند المباشر على WispByte
@@ -588,7 +589,7 @@
                     const a = document.createElement('a');
                     a.href = downloadUrl;
                     a.download = 'converted.mp3';
-                    document.body.appendChild(a);
+                    document.body.appendChild a);
                     a.click();
                     a.remove();
 
