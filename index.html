@@ -489,7 +489,7 @@
         // عرض أول ذكر فور فتح الصفحة
         document.getElementById('athkarText').textContent = athkarList[currentAthkarIndex];
 
-        // التغيير التلقائي كل 15 ثانية لإعطاء وقت كافٍ لقراءة الأدعية الطويلة
+        // التغيير التلقائي كل 15 ثانية
         setInterval(changeAthkar, 15000);
 
         // رابط دومين الباك إند المباشر على WispByte
@@ -499,6 +499,9 @@
             document.querySelectorAll('.nav-tab').forEach((tab, i) => tab.classList.toggle('active', i === index));
             document.querySelectorAll('.section').forEach((sec, i) => sec.classList.toggle('active', i === index));
         }
+
+        // تخزين الروابط المستخرجة مؤقتاً للتحميل المباشر
+        let formatsMap = {};
 
         // 1. فحص الرابط
         async function checkLink() {
@@ -524,7 +527,17 @@
                 const data = await response.json();
 
                 if (response.ok && data.success) {
-                    formatSelect.innerHTML = data.formats.map(f => `<option value="${f.id}">${f.label}</option>`).join('');
+                    formatsMap = {};
+                    formatSelect.innerHTML = '<option value="">اختر صيغة التحميل...</option>';
+                    
+                    data.formats.forEach(f => {
+                        formatsMap[f.id] = f.url;
+                        const opt = document.createElement('option');
+                        opt.value = f.id;
+                        opt.textContent = f.label;
+                        formatSelect.appendChild(opt);
+                    });
+
                     formatSelect.disabled = false;
                     document.getElementById('downloadBtn').disabled = false;
                     statusDiv.className = 'status-message status-success show';
@@ -541,18 +554,20 @@
             checkBtn.innerHTML = '<i class="fas fa-search"></i> فحص الرابط';
         }
 
-        // 2. التحميل المباشر
+        // 2. التحميل المباشر بالروابط الصحيحة المستخرجة
         function startDownload() {
-            const url = document.getElementById('urlInput').value.trim();
-            const format = document.getElementById('formatSelect').value;
-            if (!url || !format) return;
+            const formatId = document.getElementById('formatSelect').value;
+            if (!formatId || !formatsMap[formatId]) {
+                alert('يرجى اختيار الصيغة المطلوبة أولاً!');
+                return;
+            }
 
             const statusDiv = document.getElementById('downloadStatus');
             statusDiv.className = 'status-message status-info show';
-            statusDiv.textContent = 'جاري التحميل المعالج من السيرفر، سيبدأ تنزيل الملف على جهازك تلقائياً بعد لحظات...';
+            statusDiv.textContent = 'جاري بدء التنزيل على جهازك...';
 
-            const downloadUrl = `${BASE_URL}/api/download?url=${encodeURIComponent(url)}&format=${encodeURIComponent(format)}`;
-            window.location.href = downloadUrl;
+            // فتح الرابط المباشر للفيديو أو الصوت في نافذة جديدة ليبدأ التحميل فورا
+            window.open(formatsMap[formatId], '_blank');
         }
 
         // 3. تحويل الفيديو المحلي
@@ -572,7 +587,7 @@
             const convertBtn = document.getElementById('convertBtn');
             convertBtn.disabled = true;
             statusDiv.className = 'status-message status-info show';
-            statusDiv.textContent = 'جاري رفع الملف وتحويله، يرجى الانتظار...';
+            statusDiv.textContent = 'جاري رفع الملف وتحويله بواسطة FFmpeg، يرجى الانتظار...';
 
             const formData = new FormData();
             formData.append('video', selectedFile);
@@ -589,9 +604,10 @@
                     const a = document.createElement('a');
                     a.href = downloadUrl;
                     a.download = 'converted.mp3';
-                    document.body.appendChild a);
+                    document.body.appendChild(a); // تم تصحيح الخطأ هنا
                     a.click();
                     a.remove();
+                    window.URL.revokeObjectURL(downloadUrl);
 
                     statusDiv.className = 'status-message status-success show';
                     statusDiv.textContent = 'تم التحويل والتنزيل بنجاح!';
