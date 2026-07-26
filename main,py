@@ -1,6 +1,5 @@
 import os
 import time
-import subprocess
 from fastapi import FastAPI, HTTPException, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse, StreamingResponse, JSONResponse
@@ -8,7 +7,6 @@ import yt_dlp
 
 app = FastAPI()
 
-# السماح بالاتصالات من أي مصدر (CORS)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -17,10 +15,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# إنشاء مجلدات التنزيل والرفع إن لم تكن موجودة
-DOWNLOADS_DIR = "downloads"
 UPLOADS_DIR = "uploads"
-os.makedirs(DOWNLOADS_DIR, exist_ok=True)
 os.makedirs(UPLOADS_DIR, exist_ok=True)
 
 # 1. الواجهة الأمامية الشاملة (HTML/CSS/JS)
@@ -75,7 +70,7 @@ async def serve_frontend():
         .input-wrapper i { position: absolute; right: 16px; top: 50%; transform: translateY(-50%); color: var(--blue-electric); font-size: 16px; }
         .input-field { width: 100%; padding: 14px 16px 14px 48px; background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border-subtle); border-radius: 16px; color: var(--text-primary); font-family: 'Tajawal', sans-serif; font-size: 15px; outline: none; transition: all 0.3s; }
         .input-field:focus { border-color: var(--pink-neon); box-shadow: 0 0 0 3px var(--pink-glow); }
-        .btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; padding: 14px 28px; border: none; border-radius: 16px; font-family: 'Tajawal', sans-serif; font-size: 15px; font-weight: 700; cursor: pointer; transition: all 0.3s; }
+        .btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; padding: 14px 28px; border: none; border-radius: 16px; font-family: 'Tajawal', sans-serif; font-size: 15px; font-weight: 700; cursor: pointer; transition: all 0.3s; text-decoration: none; }
         .btn-primary { background: var(--gradient-pink-blue); color: white; box-shadow: 0 4px 20px var(--pink-glow); }
         .btn-secondary { background: transparent; color: var(--blue-electric); border: 1px solid rgba(31, 143, 255, 0.3); }
         .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none !important; }
@@ -102,7 +97,7 @@ async def serve_frontend():
         <header class="app-header">
             <div>
                 <h1>Fast Save Pro</h1>
-                <div style="font-size: 13px; color: #6b6b80; text-align: center;">التحميل والتحويل الذكي لكل المنصات</div>
+                <div style="font-size: 13px; color: #6b6b80; text-align: center;">التحميل المباشر السريع بدون إجهاد للسيرفر</div>
             </div>
         </header>
 
@@ -111,7 +106,6 @@ async def serve_frontend():
             <button class="nav-tab" onclick="switchTab(1)"><i class="fas fa-music"></i> <span>تحويل محلي</span></button>
         </nav>
 
-        <!-- قسم التحميل من المنصات -->
         <section class="section active" id="section-download">
             <div class="card">
                 <h2 class="card-title">📥 التحميل من أي منصة</h2>
@@ -124,17 +118,16 @@ async def serve_frontend():
                     </div>
                 </div>
                 <div style="margin-bottom: 20px;">
-                    <button class="btn btn-secondary" id="checkBtn" onclick="checkLink()"><i class="fas fa-search"></i> فحص الرابط</button>
+                    <button class="btn btn-secondary" id="checkBtn" onclick="checkLink()"><i class="fas fa-search"></i> فحص جلب الروابط المباشرة</button>
                 </div>
                 <select class="select-field" id="formatSelect" disabled>
-                    <option value="">اختر صيغة التحميل...</option>
+                    <option value="">اختر الجودة المطلوبة...</option>
                 </select>
-                <button class="btn btn-primary btn-full" id="downloadBtn" disabled onclick="startDownload()"><i class="fas fa-download"></i> بدء التنزيل المباشر</button>
+                <button class="btn btn-primary btn-full" id="downloadBtn" disabled onclick="startDirectDownload()"><i class="fas fa-download"></i> تحميل مباشر فوراً</button>
                 <div class="status-message" id="downloadStatus"></div>
             </div>
         </section>
 
-        <!-- قسم تحويل مقطع فيديو إلى صوت -->
         <section class="section" id="section-convert">
             <div class="card">
                 <h2 class="card-title">🎵 استخراج الصوت من فيديو محلي</h2>
@@ -150,10 +143,12 @@ async def serve_frontend():
             </div>
         </section>
 
-        <footer class="app-footer"><p>Fast Save Python Core © 2026</p></footer>
+        <footer class="app-footer"><p>Fast Save Pro Engine © 2026</p></footer>
     </div>
 
     <script>
+        let availableFormats = [];
+
         function switchTab(index) {
             document.querySelectorAll('.nav-tab').forEach((tab, i) => tab.classList.toggle('active', i === index));
             document.querySelectorAll('.section').forEach((sec, i) => sec.classList.toggle('active', i === index));
@@ -167,49 +162,60 @@ async def serve_frontend():
             const statusDiv = document.getElementById('downloadStatus');
 
             checkBtn.disabled = true;
-            checkBtn.innerHTML = '<span class="spinner"></span> جاري الفحص...';
+            checkBtn.innerHTML = '<span class="spinner"></span> جاري استخراج الروابط المباشرة...';
             statusDiv.className = 'status-message status-info show';
-            statusDiv.textContent = 'جاري الاتصال بالسيرفر وفحص الرابط...';
+            statusDiv.textContent = 'جاري الاتصال واستخراج رابط التحميل المباشر...';
 
             try {
-                const response = await fetch('/api/check', {
+                const response = await fetch('/api/get-direct-links', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ url })
                 });
                 const data = await response.json();
                 if (response.ok && data.success) {
-                    formatSelect.innerHTML = data.formats.map(f => `<option value="${f.id}">${f.label}</option>`).join('');
+                    availableFormats = data.formats;
+                    formatSelect.innerHTML = data.formats.map((f, index) => `<option value="${index}">${f.label}</option>`).join('');
                     formatSelect.disabled = false;
                     document.getElementById('downloadBtn').disabled = false;
                     statusDiv.className = 'status-message status-success show';
-                    statusDiv.textContent = `تم الفحص بنجاح: ${data.title}`;
+                    statusDiv.textContent = `تم الجلب بنجاح: ${data.title}`;
                 } else {
-                    throw new Error(data.error || 'فشل الفحص');
+                    throw new Error(data.error || 'فشل استخراج الروابط');
                 }
             } catch (err) {
                 statusDiv.className = 'status-message status-error show';
                 statusDiv.textContent = err.message || 'تعذر الاتصال بالسيرفر.';
             }
             checkBtn.disabled = false;
-            checkBtn.innerHTML = '<i class="fas fa-search"></i> فحص الرابط';
+            checkBtn.innerHTML = '<i class="fas fa-search"></i> فحص وجلب الروابط المباشرة';
         }
 
-        function startDownload() {
-            const url = document.getElementById('urlInput').value.trim();
-            const format = document.getElementById('formatSelect').value;
-            if (!url || !format) return;
+        function startDirectDownload() {
+            const selectedIndex = document.getElementById('formatSelect').value;
+            if (selectedIndex === "" || !availableFormats[selectedIndex]) return;
+            
+            const directUrl = availableFormats[selectedIndex].url;
+            
+            // فتح رابط الفيديو/الصوت المباشر في نافذة جديدة ليتم التنزيل فوراً من المنصة للجهاز
+            const a = document.createElement('a');
+            a.href = directUrl;
+            a.target = '_blank';
+            a.download = '';
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+
             const statusDiv = document.getElementById('downloadStatus');
-            statusDiv.className = 'status-message status-info show';
-            statusDiv.textContent = 'جاري معالجة الملف، سيبدأ التنزيل خلال لحظات...';
-            window.location.href = `/api/download?url=${encodeURIComponent(url)}&format=${encodeURIComponent(format)}`;
+            statusDiv.className = 'status-message status-success show';
+            statusDiv.textContent = 'بدأ التحميل المباشر من المنصة فوراً!';
         }
 
         let selectedFile = null;
         function handleFileSelect(e) {
             if (e.target.files.length > 0) {
                 selectedFile = e.target.files[0];
-                document.getElementById('selectedVideoText').textContent = `الملف المSelected: ${selectedFile.name}`;
+                document.getElementById('selectedVideoText').textContent = `الملف المختار: ${selectedFile.name}`;
                 document.getElementById('convertBtn').disabled = false;
             }
         }
@@ -252,85 +258,54 @@ async def serve_frontend():
 </html>
     """
 
-# 2. فحص الرابط لأي منصة
-@app.post("/api/check")
-async def check_url(data: dict):
+# 2. استخراج الروابط المباشرة بدون تنزيل الملف على السيرفر
+@app.post("/api/get-direct-links")
+async def get_direct_links(data: dict):
     url = data.get("url")
     if not url:
         raise HTTPException(status_code=400, detail="الرابط مطلوب")
     try:
-        ydl_opts = {'quiet': True, 'no_warnings': True, 'skip_download': True}
+        ydl_opts = {
+            'quiet': True,
+            'no_warnings': True,
+            'skip_download': True,
+        }
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             info = ydl.extract_info(url, download=False)
             title = info.get('title', 'محتوى بدون عنوان')
+            
+            formats_list = []
+            
+            # لو الرابط به خيارات متعددة (مثل فيديوهات يوتيوب/تيك توك)
+            if 'formats' in info:
+                for f in info['formats']:
+                    # نختار فقط الملفات المدمجة المباشرة (فيديو + صوت) أو الروابط الصالحة للتحميل
+                    if f.get('url') and f.get('vcodec') != 'none':
+                        height = f.get('height') or 'عادي'
+                        ext = f.get('ext', 'mp4')
+                        label = f"🎬 فيديو ({height}p) - صيغة {ext}"
+                        formats_list.append({"label": label, "url": f['url']})
+            
+            # لو لم يجد قائمة، نأخذ رابط الفيديو المباشر العام
+            if not formats_list and info.get('url'):
+                formats_list.append({"label": "🎬 فيديو جودة عالية (مباشر)", "url": info['url']})
+
+            # تأمين وجود رابط واحد على الأقل
+            if not formats_list:
+                formats_list.append({"label": "🎬 تنزيل الجودة الافتراضية", "url": info.get('webpage_url', url)})
+
             return {
                 "success": True,
                 "title": title,
-                "formats": [
-                    {"id": "best", "label": "🎬 أعلى جودة متاحة (MP4)"},
-                    {"id": "audio", "label": "🎵 صوت فقط (MP3 - تحويل محلي آمن)"}
-                ]
+                "formats": formats_list[:5] # نعرض أفضل 5 خيارات جودة لعدم إرباك المستخدم
             }
     except Exception as e:
-        return JSONResponse(status_code=500, content={"success": False, "error": "فشل فحص الرابط، تأكد من صحته أو توفر المحتوى."})
+        return JSONResponse(status_code=500, content={"success": False, "error": "تعذر استخراج الروابط المباشرة، تأكد من صحة الرابط."})
 
-# 3. التحميل الذكي لكل المنصات (بما فيها تيك توك)
-@app.get("/api/download")
-async def download_media(url: str, format: str = "best"):
-    if not url:
-        raise HTTPException(status_code=400, detail="الرابط مطلوب")
-
-    file_id = str(int(time.time() * 1000))
-    out_template = os.path.join(DOWNLOADS_DIR, f"{file_id}.%(ext)s")
-
-    ydl_opts = {'outtmpl': out_template, 'quiet': True, 'no_warnings': True, 'format': 'best'}
-
-    try:
-        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-            info = ydl.extract_info(url, download=True)
-            downloaded_file = ydl.prepare_filename(info)
-
-        target_file = downloaded_file
-        media_type = "video/mp4"
-        download_name = "video.mp4"
-
-        # إذا طلب المستخدم صوت، يتم تنزيل الفيديو أولاً ثم تحويله بواسطة FFmpeg لتفادي حجب روابط الصوت في تيك توك
-        if format == "audio":
-            base_name = os.path.splitext(downloaded_file)[0]
-            mp3_file = f"{base_name}.mp3"
-            
-            subprocess.run([
-                'ffmpeg', '-y', '-i', downloaded_file, 
-                '-vn', '-acodec', 'libmp3lame', '-ab', '192k', mp3_file
-            ], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-
-            if os.path.exists(downloaded_file):
-                os.remove(downloaded_file)
-
-            target_file = mp3_file
-            media_type = "audio/mpeg"
-            download_name = "audio.mp3"
-
-        # تنظيف وبث الملف للمستخدم ثم مسحه من السيرفر فوراً
-        def iterfile():
-            try:
-                with open(target_file, mode="rb") as file_like:
-                    yield from file_like
-            finally:
-                if os.path.exists(target_file):
-                    os.remove(target_file)
-
-        return StreamingResponse(
-            iterfile(),
-            media_type=media_type,
-            headers={"Content-Disposition": f'attachment; filename="{download_name}"'}
-        )
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"حدث خطأ أثناء التنزيل: {str(e)}")
-
-# 4. تحويل فيديو محلي إلى صوت
+# 3. تحويل فيديو محلي إلى صوت
 @app.post("/api/convert")
 async def convert_local_video(video: UploadFile = File(...)):
+    import subprocess
     input_path = os.path.join(UPLOADS_DIR, f"{time.time()}_{video.filename}")
     output_path = os.path.splitext(input_path)[0] + ".mp3"
 
@@ -363,7 +338,6 @@ async def convert_local_video(video: UploadFile = File(...)):
             os.remove(input_path)
         raise HTTPException(status_code=500, detail="فشل تحويل الملف")
 
-# 5. تشغيل السيرفر وقراءة بورت الاستضافة التلقائي
 if __name__ == "__main__":
     import uvicorn
     port = int(os.environ.get("PORT", 13679))
