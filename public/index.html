@@ -60,18 +60,18 @@
             left: 50%;
             transform: translateX(-50%);
             z-index: 9999;
-            width: 90%;
-            max-width: 600px;
-            background: linear-gradient(135deg, rgba(31, 143, 255, 0.15), rgba(255, 31, 120, 0.15));
+            width: 92%;
+            max-width: 700px;
+            background: linear-gradient(135deg, rgba(31, 143, 255, 0.2), rgba(255, 31, 120, 0.2));
             border: 1px solid rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(15px);
-            border-radius: 50px;
-            padding: 10px 20px;
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 12px 20px;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
-            transition: opacity 0.5s ease, transform 0.5s ease;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
+            transition: all 0.5s ease;
         }
 
         .athkar-content {
@@ -87,12 +87,14 @@
 
         .athkar-content i {
             color: var(--pink-neon);
-            font-size: 16px;
+            font-size: 18px;
+            flex-shrink: 0;
         }
 
         .athkar-text {
             transition: opacity 0.4s ease;
             text-align: center;
+            line-height: 1.5;
         }
 
         .close-athkar {
@@ -103,6 +105,7 @@
             cursor: pointer;
             padding: 2px 6px;
             transition: color 0.3s;
+            flex-shrink: 0;
         }
 
         .close-athkar:hover {
@@ -111,7 +114,7 @@
 
         .app-container {
             position: relative; z-index: 2; max-width: 900px; margin: 0 auto;
-            padding: 70px 20px 20px; min-height: 100vh; display: flex; flex-direction: column;
+            padding: 85px 20px 20px; min-height: 100vh; display: flex; flex-direction: column;
         }
 
         .app-header {
@@ -338,7 +341,7 @@
     <div class="athkar-banner" id="athkarBanner">
         <div class="athkar-content">
             <i class="fas fa-kaaba"></i>
-            <span class="athkar-text" id="athkarText">قال ﷺ: «كَلِمَتَانِ خَفِيفَتَانِ عَلَى اللِّسَانِ، ثَقِيلَتَانِ فِي الْمِيزَانِ: سُبْحَانَ اللَّهِ وَبِحَمْدِهِ، سُبْحَانَ اللَّهِ الْعَظِيمِ»</span>
+            <span class="athkar-text" id="athkarText">جاري التحميل...</span>
         </div>
         <button class="close-athkar" onclick="document.getElementById('athkarBanner').style.display='none'"><i class="fas fa-times"></i></button>
     </div>
@@ -419,12 +422,10 @@
         <section class="section" id="section-developer">
             <div class="developer-card-container">
                 <div class="developer-card">
-                    <!-- شارة مطور -->
                     <div class="dev-badge">
                         <i class="fas fa-code"></i> مطور الموقع
                     </div>
 
-                    <!-- صوة الـ Avatar الحديثة -->
                     <div class="developer-avatar-wrapper">
                         <div class="developer-avatar">
                             <i class="fas fa-user-astronaut"></i>
@@ -432,11 +433,9 @@
                         <span class="online-indicator"></span>
                     </div>
 
-                    <!-- الاسم والمعلومات -->
                     <h3 class="developer-name">Eng. Ahmed Abo El-Diyar</h3>
                     <p class="developer-title">Software & DevOps Engineer</p>
 
-                    <!-- أزرار التواصل الواتساب والتليجرام -->
                     <div class="social-buttons">
                         <a href="https://wa.me/201552833826" target="_blank" class="btn btn-success btn-full" style="text-decoration: none;">
                             <i class="fab fa-whatsapp" style="font-size: 18px;"></i>
@@ -458,18 +457,24 @@
     </div>
 
     <script>
-        // --- قائمة الأحاديث والأذكار المتغيرة تلقائياً ---
+        // --- مصفوفة غنية ومحدثة بالأذكار والأدعية والأحاديث النبوية الصحيحة ---
         const athkarList = [
+            "ذكر: «سُبْحَانَ اللهِ وَبِحَمْدِهِ، عَدَدَ خَلْقِهِ وَرِضَا نَفْسِهِ وَزِنَةَ عَرْشِهِ وَمِدَادَ كَلِمَاتِهِ» (3 مرات)",
+            "ذكر: «سُبْحَانَ اللَّهِ، وَالْحَمْدُ لِلَّهِ، وَلا إِلَهَ إِلا اللَّهُ، وَاللَّهُ أَكْبَرُ، وَلا حَوْلَ وَلا قُوَّةَ إِلا بِاللَّهِ الْعَلِيِّ الْعَظِيمِ»",
+            "دعاء النبي ﷺ: «اللَّهُمَّ أَنْتَ الأَوَّلُ فَلَيْسَ قَبْلَكَ شَيْءٌ، وَأَنْتَ الآخِرُ فَلَيْسَ بَعْدَكَ شَيْءٌ، وَأَنْتَ الظَّاهِرُ فَلَيْسَ فَوْقَكَ شَيْءٌ، وَأَنْتَ الْبَاطِنُ فَلَيْسَ دُونَكَ شَيْءٌ، اقْضِ عَنَّا الدَّيْنَ وَأَغْنِنَا مِنَ الْفَقْرِ»",
+            "دعاء قرآني: «رَبَّنَا اغْفِرْ لَنَا ذُنُوبَنَا وَكَفِّرْ عَنَّا سَيِّئَاتِنَا وَتَوَفَّنَا مَعَ الأَبْرَارِ»",
+            "دعاء: «اللَّهُمَّ مَغْفِرَتُكَ أَوْسَعُ مِنْ ذُنُوبِي، وَرَحْمَتُكَ أَرْجَى عِنْدِي مِنْ عَمَلِي»",
             "قال ﷺ: «كَلِمَتَانِ خَفِيفَتَانِ عَلَى اللِّسَانِ، ثَقِيلَتَانِ فِي الْمِيزَانِ: سُبْحَانَ اللَّهِ وَبِحَمْدِهِ، سُبْحَانَ اللَّهِ الْعَظِيمِ»",
             "قال ﷺ: «مَنْ صَلَّى عَلَيَّ صَلاةً صَلَّى اللَّهُ عَلَيْهِ بِهَا عَشْرًا»",
-            "دعاء: «اللَّهُمَّ إِنِّي أَسْأَلُكَ عِلْمًا نَافِعًا، وَرِزْقًا طَيِّبًا، وَعَمَلًا مُتَقَبَّلًا»",
             "ذكر: «لا حَوْلَ وَلا قُوَّةَ إِلا بِاللَّهِ، كَنْزٌ مِنْ كُنُوزِ الْجَنَّةِ»",
-            "قال ﷺ: «أَحَبُّ الْكَلامِ إِلَى اللَّهِ أرْبَعٌ: سُبْحَانَ اللَّهِ، وَالْحَمْدُ لِلَّهِ، وَلا إِلَهَ إِلا اللَّهُ، وَاللَّهُ أَكْبَرُ»",
-            "دعاء: «رَبَّنَا آتِنَا فِي الدُّنْيَا حَسَنَةً وَفِي الآخِرَةِ حَسَنَةً وَقِنَا عَذَابَ النَّارِ»",
-            "ذكر: «أَسْتَغْفِرُ اللَّهَ الْعَظِيمَ الَّذِي لا إِلَهَ إِلا هُوَ الْحَيُّ الْقَيُّومُ وَأَتُوبُ إِلَيْهِ»"
+            "دعاء: «اللَّهُمَّ إِنِّي أَسْأَلُكَ عِلْمًا نَافِعًا، وَرِزْقًا طَيِّبًا، وَعَمَلًا مُتَقَبَّلًا»",
+            "ذكر: «أَسْتَغْفِرُ اللَّهَ الْعَظِيمَ الَّذِي لا إِلَهَ إِلا هُوَ الْحَيُّ الْقَيُّومُ وَأَتُوبُ إِلَيْهِ»",
+            "دعاء قرآني: «رَبَّنَا آتِنَا فِي الدُّنْيَا حَسَنَةً وَفِي الآخِرَةِ حَسَنَةً وَقِنَا عَذَابَ النَّارِ»",
+            "قال ﷺ: «أَفْضَلُ الذِّكْرِ: لا إِلَهَ إِلا اللَّهُ، وَأَفْضَلُ الدُّعَاءِ: الْحَمْدُ لِلَّهِ»"
         ];
 
-        let currentAthkarIndex = 0;
+        let currentAthkarIndex = Math.floor(Math.random() * athkarList.length);
+
         function changeAthkar() {
             const athkarTextEl = document.getElementById('athkarText');
             athkarTextEl.style.opacity = 0;
@@ -480,8 +485,11 @@
             }, 400);
         }
 
-        // تغيير الحديث/الذكر تلقائياً كل 8 ثوانٍ
-        setInterval(changeAthkar, 8000);
+        // عرض أول ذكر فور فتح الصفحة
+        document.getElementById('athkarText').textContent = athkarList[currentAthkarIndex];
+
+        // التغيير التلقائي كل 9 ثوانٍ لإعطاء وقت كافٍ لقراءة الأدعية الطويلة
+        setInterval(changeAthkar, 9000);
 
         // رابط دومين الباك إند المباشر على WispByte
         const BASE_URL = 'https://Fast-Save-Pro.wispbyte.app';
