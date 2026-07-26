@@ -53,14 +53,70 @@
             50% { transform: translate(-20px, 20px) scale(0.9); }
         }
 
+        /* --- شريط الأذكار والأحاديث المتغير أعلى الصفحة --- */
+        .athkar-banner {
+            position: fixed;
+            top: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 9999;
+            width: 90%;
+            max-width: 600px;
+            background: linear-gradient(135deg, rgba(31, 143, 255, 0.15), rgba(255, 31, 120, 0.15));
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(15px);
+            border-radius: 50px;
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+
+        .athkar-content {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #ffffff;
+            width: 100%;
+            justify-content: center;
+        }
+
+        .athkar-content i {
+            color: var(--pink-neon);
+            font-size: 16px;
+        }
+
+        .athkar-text {
+            transition: opacity 0.4s ease;
+            text-align: center;
+        }
+
+        .close-athkar {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 14px;
+            cursor: pointer;
+            padding: 2px 6px;
+            transition: color 0.3s;
+        }
+
+        .close-athkar:hover {
+            color: var(--pink-neon);
+        }
+
         .app-container {
             position: relative; z-index: 2; max-width: 900px; margin: 0 auto;
-            padding: 20px; min-height: 100vh; display: flex; flex-direction: column;
+            padding: 70px 20px 20px; min-height: 100vh; display: flex; flex-direction: column;
         }
 
         .app-header {
             display: flex; align-items: center; justify-content: center;
-            padding: 20px 0 30px; gap: 15px;
+            padding: 10px 0 30px; gap: 15px;
         }
 
         .app-header .logo-icon {
@@ -131,6 +187,8 @@
         .btn-secondary { background: transparent; color: var(--blue-electric); border: 1px solid rgba(31, 143, 255, 0.3); }
         .btn-success { background: linear-gradient(135deg, #25D366, #128C7E); color: white; box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3); }
         .btn-success:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(37, 211, 102, 0.5); }
+        .btn-telegram { background: linear-gradient(135deg, #0088cc, #005580); color: white; box-shadow: 0 4px 15px rgba(0, 136, 204, 0.3); }
+        .btn-telegram:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0, 136, 204, 0.5); }
         .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none !important; }
         .btn-full { width: 100%; padding: 16px; font-size: 16px; }
 
@@ -254,6 +312,12 @@
             margin-bottom: 25px;
         }
 
+        .social-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
         .app-footer { text-align: center; padding: 30px 0; color: var(--text-muted); font-size: 12px; margin-top: auto; }
 
         .spinner {
@@ -264,9 +328,19 @@
     </style>
 </head>
 <body>
+    <!-- خلفية تفاعلية -->
     <div class="bg-animation">
         <div class="orb orb-1"></div>
         <div class="orb orb-2"></div>
+    </div>
+
+    <!-- شريط الأذكار والأحاديث النبوية علوي -->
+    <div class="athkar-banner" id="athkarBanner">
+        <div class="athkar-content">
+            <i class="fas fa-kaaba"></i>
+            <span class="athkar-text" id="athkarText">قال ﷺ: «كَلِمَتَانِ خَفِيفَتَانِ عَلَى اللِّسَانِ، ثَقِيلَتَانِ فِي الْمِيزَانِ: سُبْحَانَ اللَّهِ وَبِحَمْدِهِ، سُبْحَانَ اللَّهِ الْعَظِيمِ»</span>
+        </div>
+        <button class="close-athkar" onclick="document.getElementById('athkarBanner').style.display='none'"><i class="fas fa-times"></i></button>
     </div>
 
     <div class="app-container">
@@ -362,11 +436,18 @@
                     <h3 class="developer-name">Eng. Ahmed Abo El-Diyar</h3>
                     <p class="developer-title">Software & DevOps Engineer</p>
 
-                    <!-- زر الواتساب التفاعلي -->
-                    <a href="https://wa.me/201552833826" target="_blank" class="btn btn-success btn-full" style="text-decoration: none;">
-                        <i class="fab fa-whatsapp" style="font-size: 18px;"></i>
-                        <span>تواصل عبر الواتساب</span>
-                    </a>
+                    <!-- أزرار التواصل الواتساب والتليجرام -->
+                    <div class="social-buttons">
+                        <a href="https://wa.me/201552833826" target="_blank" class="btn btn-success btn-full" style="text-decoration: none;">
+                            <i class="fab fa-whatsapp" style="font-size: 18px;"></i>
+                            <span>تواصل عبر الواتساب</span>
+                        </a>
+
+                        <a href="https://t.me/+201552833826" target="_blank" class="btn btn-telegram btn-full" style="text-decoration: none;">
+                            <i class="fab fa-telegram-plane" style="font-size: 18px;"></i>
+                            <span>تواصل عبر التليجرام</span>
+                        </a>
+                    </div>
                 </div>
             </div>
         </section>
@@ -377,6 +458,31 @@
     </div>
 
     <script>
+        // --- قائمة الأحاديث والأذكار المتغيرة تلقائياً ---
+        const athkarList = [
+            "قال ﷺ: «كَلِمَتَانِ خَفِيفَتَانِ عَلَى اللِّسَانِ، ثَقِيلَتَانِ فِي الْمِيزَانِ: سُبْحَانَ اللَّهِ وَبِحَمْدِهِ، سُبْحَانَ اللَّهِ الْعَظِيمِ»",
+            "قال ﷺ: «مَنْ صَلَّى عَلَيَّ صَلاةً صَلَّى اللَّهُ عَلَيْهِ بِهَا عَشْرًا»",
+            "دعاء: «اللَّهُمَّ إِنِّي أَسْأَلُكَ عِلْمًا نَافِعًا، وَرِزْقًا طَيِّبًا، وَعَمَلًا مُتَقَبَّلًا»",
+            "ذكر: «لا حَوْلَ وَلا قُوَّةَ إِلا بِاللَّهِ، كَنْزٌ مِنْ كُنُوزِ الْجَنَّةِ»",
+            "قال ﷺ: «أَحَبُّ الْكَلامِ إِلَى اللَّهِ أرْبَعٌ: سُبْحَانَ اللَّهِ، وَالْحَمْدُ لِلَّهِ، وَلا إِلَهَ إِلا اللَّهُ، وَاللَّهُ أَكْبَرُ»",
+            "دعاء: «رَبَّنَا آتِنَا فِي الدُّنْيَا حَسَنَةً وَفِي الآخِرَةِ حَسَنَةً وَقِنَا عَذَابَ النَّارِ»",
+            "ذكر: «أَسْتَغْفِرُ اللَّهَ الْعَظِيمَ الَّذِي لا إِلَهَ إِلا هُوَ الْحَيُّ الْقَيُّومُ وَأَتُوبُ إِلَيْهِ»"
+        ];
+
+        let currentAthkarIndex = 0;
+        function changeAthkar() {
+            const athkarTextEl = document.getElementById('athkarText');
+            athkarTextEl.style.opacity = 0;
+            setTimeout(() => {
+                currentAthkarIndex = (currentAthkarIndex + 1) % athkarList.length;
+                athkarTextEl.textContent = athkarList[currentAthkarIndex];
+                athkarTextEl.style.opacity = 1;
+            }, 400);
+        }
+
+        // تغيير الحديث/الذكر تلقائياً كل 8 ثوانٍ
+        setInterval(changeAthkar, 8000);
+
         // رابط دومين الباك إند المباشر على WispByte
         const BASE_URL = 'https://Fast-Save-Pro.wispbyte.app';
 
@@ -436,7 +542,6 @@
             statusDiv.className = 'status-message status-info show';
             statusDiv.textContent = 'جاري التحميل المعالج من السيرفر، سيبدأ تنزيل الملف على جهازك تلقائياً بعد لحظات...';
 
-            // تحويل المستخدم لمسار التنزيل المباشر المخصص في الباك إند
             const downloadUrl = `${BASE_URL}/api/download?url=${encodeURIComponent(url)}&format=${encodeURIComponent(format)}`;
             window.location.href = downloadUrl;
         }
